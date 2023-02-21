@@ -10,9 +10,9 @@ const questionSchema = mongoose.Schema({
       letter: { type: String },
     },
   ],
-  correctAnswer: { type: Number },
+  correctAnswer: { type: Number, select: false },
   type: { type: String },
-  weight: { type: Number },
+  weight: { type: Number, select: false },
 });
 
 module.exports = mongoose.model("Question", questionSchema);

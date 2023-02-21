@@ -1,35 +1,78 @@
 const asyncHandler = require("express-async-handler");
 
 const Question = require("../models/questionModel");
+const Results = require("../models/resultsModel");
 
 // get question
 const getQuestion = asyncHandler(async (req, res) => {
-  const question = await Question.find();
+  try {
+    const question = await Question.find();
 
-  res.status(200).json(question);
+    res.status(200).json(question);
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 // post question
 const postQuestion = asyncHandler(async (req, res) => {
-  const question = await Question.create({
-    id: req.body.id,
-    question: req.body.question,
-    option: [
-      {
-        questionID: req.body.option[0].questionID,
-        value: req.body.option[0].value,
-        letter: req.body.option[0].letter,
-      },
-    ],
-    correctAnswer: req.body.correctAnswer,
-    type: req.body.type,
-    weight: req.body.weight,
-  });
+  try {
+    const options = req.body.option.map((opt) => {
+      return {
+        questionID: opt.questionID,
+        value: opt.value,
+        letter: opt.letter,
+      };
+    });
+    const question = await Question.create({
+      id: req.body.id,
+      question: req.body.question,
+      option: options,
+      correctAnswer: req.body.correctAnswer,
+      type: req.body.type,
+      weight: req.body.weight,
+    });
 
-  res.status(201).json(question);
+    res.status(201).json(question);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+// results post
+const postResults = asyncHandler(async (req, res) => {
+  try {
+    let score = 0;
+    const answerBody = req.body;
+    console.log("req.bod", answerBody);
+    const QuestionModel = await Question.find();
+    const compareAnswer = answerBody.map((item) => {
+      console.log(item);
+      const compareQuestion = Question.find(
+        (comparator) => comparator.id === item.id
+      );
+      if (compareQuestion.correctAnswer === item.questionID) {
+        score += compareAnswer.weight;
+        return { ...item };
+      }
+    });
+
+    const newResults = new Results({
+      id: req.id,
+      answer: compareAnswer,
+      score: score,
+    });
+
+    await newResults.save();
+
+    console.log("Questions", QuestionModel);
+
+    res.status(201).json(newResults);
+  } catch (error) {}
 });
 
 module.exports = {
   getQuestion,
   postQuestion,
+  postResults,
 };
