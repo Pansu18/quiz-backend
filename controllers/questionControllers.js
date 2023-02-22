@@ -53,11 +53,12 @@ const postResults = asyncHandler(async (req, res) => {
       );
       const correctAnswer = compareQuestion.correctAnswer;
       const answer = item.answer.questionID;
-      if (correctAnswer === answer) {
+      console.log(correctAnswer === answer);
+      if (answer === correctAnswer) {
         score += compareQuestion.weight;
-        return { ...item, correct: true };
+        return { ...item.answer, correct: true };
       } else {
-        return { ...item, correct: false };
+        return { ...item.answer, correct: false };
       }
     });
 
