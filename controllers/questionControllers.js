@@ -45,14 +45,16 @@ const postResults = asyncHandler(async (req, res) => {
   try {
     let score = 0;
     const answerBody = req.body;
-    console.log("req.bod", answerBody);
+    // console.log("req.bod", answerBody);
     const QuestionModel = await Question.find({}, "+correctAnswer +weight");
     const compareAnswer = answerBody.map((item) => {
       const compareQuestion = QuestionModel.find(
-        (comparator) => comparator.id === item.id
+        (comparator) => comparator.id === item.answer.questionID
       );
-      if (compareQuestion.correctAnswer === item.questionID) {
-        score += compareAnswer.weight;
+      const correctAnswer = compareQuestion.correctAnswer;
+      const answer = item.answer.questionID;
+      if (correctAnswer === answer) {
+        score += compareQuestion.weight;
         return { ...item, correct: true };
       } else {
         return { ...item, correct: false };
