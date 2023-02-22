@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 
 const Question = require("../models/questionModel");
 const Results = require("../models/resultsModel");
+const Answer = require("../models/answerModel");
 
 // get question
 const getQuestion = asyncHandler(async (req, res) => {
@@ -64,11 +65,17 @@ const postResults = asyncHandler(async (req, res) => {
       score: score,
     });
 
+    // const answers = new Answer({
+    //   id: req.id,
+    //   answer: compareAnswer,
+    // });
+
     await newResults.save();
+    // await answers.save();
     console.log("correct", compareAnswer);
     console.log("results", newResults);
 
-    res.status(201).json(newResults);
+    res.status(201).json({ newResults, compareAnswer });
   } catch (error) {}
 });
 
