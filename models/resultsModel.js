@@ -9,6 +9,7 @@ const resultSchema = mongoose.Schema({
       letter: { type: String },
     },
   ],
+  score: { type: Number },
 });
 
 module.exports = mongoose.model("Answer", resultSchema);
